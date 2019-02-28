@@ -19,7 +19,7 @@ def get_ip(num):
         if result.get('success'):
             return {
                 'code': 200,
-                'msg': 'success',
+                'msg': 'Success get ip from ProxyIp Service Provider',
                 'data': result.get('data')
             }
         else:
