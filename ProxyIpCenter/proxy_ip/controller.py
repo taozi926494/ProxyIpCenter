@@ -27,7 +27,6 @@ def get_proxy_ip():
     """
     req_time = request.args.get('timestamp')
     req_project = request.args.get('project')
-    req_must_list = request.args.get('must_list')
     req_obtain_num = request.args.get('obtain_num')
 
 
@@ -38,6 +37,7 @@ def get_proxy_ip():
         })
 
     req_time = int(req_time)
+    # 加锁，同一时间只处理一个请求，避免重复更新IP
     with lock:
         # 获取最后一次代理IP请求数据
         last_record = ProxyIpRecord.query.order_by(ProxyIpRecord.id.desc()).limit(1).scalar()
@@ -80,9 +80,6 @@ def get_proxy_ip():
                     'code': 302,
                     'msg': 'IP is still living',
                     'proxy_expire_time': proxy_expire_time,
-                    'data': []
+                    'data': ProxyIpStorage.query_all()
                 }
-            # 如果请求中要求必须返回ip列表
-            if req_must_list:
-                ret_data['data'] = ProxyIpStorage.query_all()
             return jsonify(ret_data)
