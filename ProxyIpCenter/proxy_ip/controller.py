@@ -25,18 +25,26 @@ def get_proxy_ip():
     获取代理IP的接口
     :return:
     """
-    req_time = request.args.get('timestamp')
-    req_project = request.args.get('project')
-    req_obtain_num = request.args.get('obtain_num')
-
-
-    if not req_time or not req_project:
+    req_keys = request.args.keys()
+    if 'timestamp' not in req_keys or 'project' not in req_keys:
         return jsonify({
             'code': 400,
             'msg': 'Lack of request params, need `timestamp` `project`'
         })
 
-    req_time = int(req_time)
+    req_time = request.args.get('timestamp', type=int)
+    if not req_time:
+        return jsonify({
+            'code': 400,
+            'msg': 'Param `timestamp` must be Int Number bigger than 0 !'
+        })
+
+    # 把请求参数转字典，将之后传递给请求代理IP函数的无用的参数pop出去
+    req_args = request.args.to_dict()
+    req_project = req_args.pop('project')
+    req_args.pop('timestamp')
+    req_obtain_num = request.args.get('obtain_num', type=int)
+
     # 加锁，同一时间只处理一个请求，避免重复更新IP
     with lock:
         # 获取最后一次代理IP请求数据
@@ -63,7 +71,17 @@ def get_proxy_ip():
         # 如果请求切换IP的时间 大于 代理过期时间
         # 表明当前数据库IP已经失效，请求新的IP
         if proxy_expire_time < req_time:
-            response = proxy.get_ip(obtain_num)
+            # ToDO 从数据库里面取代理IP配置信息
+            conf_args = {
+                # 'num': obtain_num
+                'num': 1,
+                'pack': 37479
+            }
+            conf_url = 'http://webapi.http.zhimacangku.com/getip'
+            conf_args.update(req_args)
+            response = proxy.obtain_ip(url=conf_url
+                                       , method='GET'
+                                       , get_params=conf_args)
 
             if response['code'] == 200:
                 # 刷新存储代理IP的数据库数据
@@ -77,9 +95,9 @@ def get_proxy_ip():
 
         else:
             ret_data = {
-                    'code': 302,
-                    'msg': 'IP is still living',
-                    'proxy_expire_time': proxy_expire_time,
-                    'data': ProxyIpStorage.query_all()
-                }
+                'code': 302,
+                'msg': 'IP is still living',
+                'proxy_expire_time': proxy_expire_time,
+                'data': ProxyIpStorage.query_all()
+            }
             return jsonify(ret_data)

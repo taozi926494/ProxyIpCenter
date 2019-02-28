@@ -28,5 +28,5 @@ def run_app():
         SQLALCHEMY_DATABASE_URI=database_url,
     ))
     init_database()
-    # app.run(debug=True)
-    app.run(threaded=True)
+    app.run(debug=True)
+    # app.run(threaded=True)
