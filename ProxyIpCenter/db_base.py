@@ -56,11 +56,11 @@ def init_database():
     # 获取ip的数量
     proxy_obtain_num = Config.query.filter_by(name='proxy_obtain_num').scalar()
     if not proxy_obtain_num:
-        db.session.add(Config(name='proxy_obtain_num', value='2'))
+        db.session.add(Config(name='proxy_obtain_num', value='30'))
         db.session.commit()
     # 获取IP的存活时间
     proxy_live_seconds = Config.query.filter_by(name='proxy_live_seconds').scalar()
     if not proxy_live_seconds:
-        db.session.add(Config(name='proxy_live_seconds', value='30'))
+        db.session.add(Config(name='proxy_live_seconds', value='300'))
         db.session.commit()
 

@@ -62,6 +62,6 @@ class ProxyIpStorage(Base):
         for proxy_ip in proxy_ip_list:
             re_data.append({
                 'ip': proxy_ip.ip,
-                'port': proxy_ip.port
+                'port': proxy_ip.port,
             })
         return re_data
