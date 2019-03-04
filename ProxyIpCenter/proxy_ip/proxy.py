@@ -29,6 +29,8 @@ def obtain_ip(url, method, get_params={}, post_params={}):
             }
         req_url = "%s?%s" % (url, urlencode(get_params))
         response = requests.get(req_url)
+        print('req url :  ', req_url)
+        print('response.text:  ', response.text)
         if response.status_code == 200:
             result = json.loads(response.text)
             if result.get('success'):

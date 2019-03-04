@@ -28,7 +28,7 @@ class ProxyIpRecord(Base):
 class ProxyIpStorage(Base):
     __tablename__ = 'proxy_ip_storage'
     ip = db.Column(db.String(50))  # ip
-    port = db.Column(db.String(50))  # 端口
+    port = db.Column(db.Integer)  # 端口
 
     @classmethod
     def empty_storage(cls):

@@ -73,8 +73,8 @@ def get_proxy_ip():
         if proxy_expire_time < req_time:
             # ToDO 从数据库里面取代理IP配置信息
             conf_args = {
-                # 'num': obtain_num
-                'num': 1,
+                'num': obtain_num,
+                'type': 2,
                 'pack': 37479
             }
             conf_url = 'http://webapi.http.zhimacangku.com/getip'
